@@ -21,8 +21,9 @@ public class Player : MonoBehaviour
     private Rigidbody2D rb;
     private KnockBack knockBack;
     
-    // public event EventHandler OnPlayerDeath;
     public event Action OnPlayerTakeHit;
+    public event Action OnPlayerDeath;
+
     
     private void Awake()
     {
@@ -54,7 +55,6 @@ public class Player : MonoBehaviour
     {
         if (PlayerData.CanTakeDamage && PlayerData.IsAlive)
         {
-            Debug.Log("hit");
             OnPlayerTakeHit?.Invoke();
             PlayerData.CanTakeDamage = false;
             PlayerData.Health -= damage;
@@ -64,7 +64,7 @@ public class Player : MonoBehaviour
             StartCoroutine(DamageRecoveryRoutine());
         }
 
-        // DetectDeath();
+        DetectDeath();
     }
 
     private IEnumerator DamageRecoveryRoutine()
@@ -73,14 +73,14 @@ public class Player : MonoBehaviour
         PlayerData.CanTakeDamage = true;
     }
 
-   /* private void DetectDeath()
+   private void DetectDeath()
     {
-        if (currentHealth <= 0 && PlayerData.IsAlive)
+        if (PlayerData.Health <= 0 && PlayerData.IsAlive)
         {
             PlayerData.IsAlive = false;
             knockBack.StopKnockBackMovement();
             DisableMovement();
-            OnPlayerDeath?.Invoke(this, EventArgs.Empty);
+            OnPlayerDeath?.Invoke();
         }
     }
 
@@ -88,7 +88,7 @@ public class Player : MonoBehaviour
     {
         GetComponent<PlayerInput>().enabled = false; // Отключаем ввод
     }
-*/
+
     private void HandleMovement()
     {
         rb.MovePosition(rb.position + inputVector * (PlayerData.MoveSpeed * Time.fixedDeltaTime));
@@ -96,7 +96,6 @@ public class Player : MonoBehaviour
         PlayerData.InputVector = inputVector;
 
         PlayerData.IsRunning = inputVector.sqrMagnitude > minMovingSpeed * minMovingSpeed;
-        // PlayerData.IsRunning = Math.Abs(inputVector.x) > minMovingSpeed || Math.Abs(inputVector.y) > minMovingSpeed;
         
         PlayerData.ScreenPosition = Camera.main.WorldToScreenPoint(transform.position);
     }
