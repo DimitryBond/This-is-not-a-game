@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,14 +16,13 @@ public class Player : MonoBehaviour
     
     
     private readonly float minMovingSpeed = 0.1f;
-    // private bool isRunning = false;
     
     private Vector2 inputVector;
     private Rigidbody2D rb;
     private KnockBack knockBack;
     
     // public event EventHandler OnPlayerDeath;
-    // public event EventHandler OnPlayerTakeHit;
+    public event Action OnPlayerTakeHit;
     
     private void Awake()
     {
@@ -50,29 +50,30 @@ public class Player : MonoBehaviour
         HandleMovement();
     }
 
-    /*public void TakeDamage(Transform damageSourse, int damage)
+    public void TakeDamage(Transform damageSource, int damage)
     {
-        if (canTakeDamage && PlayerData.IsAlive)
+        if (PlayerData.CanTakeDamage && PlayerData.IsAlive)
         {
-            OnPlayerTakeHit?.Invoke(this, EventArgs.Empty);
-            canTakeDamage = false;
-            currentHealth = Math.Max(0, currentHealth -= damage);
-            Debug.Log(currentHealth);
-            knockBack.GetKnockedBack(damageSourse);
+            Debug.Log("hit");
+            OnPlayerTakeHit?.Invoke();
+            PlayerData.CanTakeDamage = false;
+            PlayerData.Health -= damage;
+            Debug.Log(PlayerData.Health);
+            knockBack.GetKnockedBack(damageSource);
 
             StartCoroutine(DamageRecoveryRoutine());
         }
 
-        DetectDeath();
+        // DetectDeath();
     }
 
     private IEnumerator DamageRecoveryRoutine()
     {
         yield return new WaitForSeconds(playerSo.damageRecoveryTime);
-        canTakeDamage = true;
+        PlayerData.CanTakeDamage = true;
     }
 
-    private void DetectDeath()
+   /* private void DetectDeath()
     {
         if (currentHealth <= 0 && PlayerData.IsAlive)
         {
@@ -94,7 +95,8 @@ public class Player : MonoBehaviour
 
         PlayerData.InputVector = inputVector;
 
-        PlayerData.IsRunning = Math.Abs(inputVector.x) > minMovingSpeed || Math.Abs(inputVector.y) > minMovingSpeed;
+        PlayerData.IsRunning = inputVector.sqrMagnitude > minMovingSpeed * minMovingSpeed;
+        // PlayerData.IsRunning = Math.Abs(inputVector.x) > minMovingSpeed || Math.Abs(inputVector.y) > minMovingSpeed;
         
         PlayerData.ScreenPosition = Camera.main.WorldToScreenPoint(transform.position);
     }

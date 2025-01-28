@@ -14,8 +14,9 @@ public class PlayerVisual : MonoBehaviour
     private SpriteRenderer spriteRenderer;
 
     private const string IS_RUNNING = "IsRunning";
+    private const string TAKE_HIT = "TakeHit";
     //private const string IS_DIE = "IsDie";
-    //private const string TAKE_HIT = "TakeHit";
+    
     
 
     private void Awake()
@@ -29,12 +30,14 @@ public class PlayerVisual : MonoBehaviour
     {
         playerData.OnInputVectorChanged += Move;
         playerData.OnScreenPositionChanged += AdjustPlayerFacingDirection;
+        player.OnPlayerTakeHit += PlayerTakeHit;
     }
-    
+
     private void OnDisable()
     {
         playerData.OnInputVectorChanged -= Move;
-        playerData.OnScreenPositionChanged += AdjustPlayerFacingDirection;
+        playerData.OnScreenPositionChanged -= AdjustPlayerFacingDirection;
+        player.OnPlayerTakeHit -= PlayerTakeHit;
     }
 
     private void Move(Vector2 inputVector)
@@ -44,8 +47,6 @@ public class PlayerVisual : MonoBehaviour
 
     private void Update()
     {
-        
-
         /*
         if (Player.Instance.IsAlive())
         {
@@ -53,17 +54,14 @@ public class PlayerVisual : MonoBehaviour
         }*/
     }
 
-
+    private void PlayerTakeHit()
+    {
+        animator.SetTrigger(TAKE_HIT);
+    }
     /*
     private void Start()
     {
         //Player.Instance.OnPlayerDeath += Player_OnPlayerDeath;
-        //Player.Instance.OnPlayerTakeHit += Player_OnPlayerTakeHit;
-    }
-
-    private void Player_OnPlayerTakeHit(object sender, EventArgs e)
-    {
-        animator.SetTrigger(TAKE_HIT);
     }
 
     private void Player_OnPlayerDeath(object sender, EventArgs e)

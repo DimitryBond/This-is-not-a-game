@@ -25,7 +25,7 @@ public class EnemyEntity : MonoBehaviour
     {
         if (collision.transform.TryGetComponent(out Player player))
         {
-            //player.TakeDamage(transform, enemySO.enemyDamageAmount);
+            player.TakeDamage(transform, enemySO.enemyDamageAmount);
         }
     }
 

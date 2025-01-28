@@ -11,10 +11,11 @@ public class PlayerData
     
     public float MoveSpeed { get; set; }
     public bool IsRunning { get; set; } = true;
+    public bool CanTakeDamage { get; set; } = true;
     
     public int CurrentHealth { get; set; } = 10;
     public float DamageRecoveryTime { get; set; } = 0.5f;
-    public bool CanTakeDamage { get; set; } = true;
+    
 
     public event Action<float> OnHealthChanged;
     public event Action OnAliveChanged;
