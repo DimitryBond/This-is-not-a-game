@@ -1,3 +1,4 @@
+/*
 using System;
 using UnityEngine;
 
@@ -24,7 +25,7 @@ public class EnemyEntity : MonoBehaviour
     {
         if (collision.transform.TryGetComponent(out Player player))
         {
-            player.TakeDamage(transform, enemySO.enemyDamageAmount);
+            //player.TakeDamage(transform, enemySO.enemyDamageAmount);
         }
     }
 
@@ -71,3 +72,4 @@ public class EnemyEntity : MonoBehaviour
     
     
 }
+*/

@@ -1,3 +1,4 @@
+/*
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -30,10 +31,10 @@ public class Sword : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.transform.TryGetComponent(out EnemyEntity enemyEntity))
+        /*if (collision.transform.TryGetComponent(out EnemyEntity enemyEntity))
         {
             enemyEntity.TakeDamage(damageAmount);
-        }
+        }#1#
     }
 
     public void AttackColliderTurnOff() // чтобы мы могли отключить его через визуал
@@ -52,3 +53,4 @@ public class Sword : MonoBehaviour
         AttackColliderTurnOn();
     }
 }
+*/

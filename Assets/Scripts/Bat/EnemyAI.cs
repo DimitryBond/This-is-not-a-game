@@ -1,3 +1,4 @@
+/*
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -58,8 +59,8 @@ public class EnemyAI : MonoBehaviour
 
     private void Update()
     {
-        StateHandler();
-        MovementDirectionHandler();
+        //StateHandler();
+        //MovementDirectionHandler();
     }
 
     public void SetDeathState()
@@ -218,3 +219,4 @@ public class EnemyAI : MonoBehaviour
         }
     }
 }
+*/

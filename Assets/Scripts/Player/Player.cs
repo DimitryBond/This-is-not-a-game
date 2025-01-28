@@ -1,130 +1,118 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection.Emit;
-using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [SelectionBase] // чтобы всегда выбирать Player вместо Visual 
+[RequireComponent(typeof(Rigidbody2D))]
 public class Player : MonoBehaviour
 {
-    public static Player Instance { get; private set; }
-    public event EventHandler OnPlayerDeath;
-    public event EventHandler OnPlayerTakeHit;
+    public readonly PlayerData PlayerData = new();
     
-    [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private int maxHealth = 10;
-    [SerializeField] private float damageRecoveryTime = 0.5f;
+    [SerializeField] private PlayerSO playerSo;
+    
+    // private int currentHealth;
+    // private bool canTakeDamage = true;
+    
+    
+    private readonly float minMovingSpeed = 0.1f;
+    // private bool isRunning = false;
     
     private Vector2 inputVector;
-    
     private Rigidbody2D rb;
     private KnockBack knockBack;
     
-    private float minMovingSpeed = 0.1f;
-    private bool isRunning= false;
+    // public event EventHandler OnPlayerDeath;
+    // public event EventHandler OnPlayerTakeHit;
     
-    private int currentHealth;
-    private bool canTakeDamage = true;
-
-    private bool isAlive = true; // можно так или лучше в start?
-
     private void Awake()
     {
-        Instance = this;
         rb = GetComponent<Rigidbody2D>();
         knockBack = GetComponent<KnockBack>();
         
+        PlayerData.MaxHealth = playerSo.maxHealth;
+        PlayerData.Health = playerSo.maxHealth;
+        PlayerData.MoveSpeed = playerSo.moveSpeed;
+        PlayerData.IsAlive = true;
     }
-    
+
     private void Start()
     {
-        // подписались на событие и вызываем метод при атаке
-        GameInput.Instance.OnPlayerAttack += GameInput_OnPlayerAttack;
         
-        currentHealth = maxHealth;
     }
 
     private void FixedUpdate()
     {
-        if(knockBack.GettingKnockedBack)
+        if (knockBack.GettingKnockedBack)
         {
             return;
         }
+
         HandleMovement();
     }
 
-    public bool IsAlive()
+    /*public void TakeDamage(Transform damageSourse, int damage)
     {
-        return isAlive;
-    }
-
-    private void GameInput_OnPlayerAttack(object sender, EventArgs e)
-    {
-        ActiveWeapon.Instance.GetActiveWeapon().Attack();
-    }
-
-    public void TakeDamage(Transform damageSourse, int damage)
-    {
-        if (canTakeDamage && isAlive)
+        if (canTakeDamage && PlayerData.IsAlive)
         {
             OnPlayerTakeHit?.Invoke(this, EventArgs.Empty);
             canTakeDamage = false;
             currentHealth = Math.Max(0, currentHealth -= damage);
             Debug.Log(currentHealth);
             knockBack.GetKnockedBack(damageSourse);
-            
+
             StartCoroutine(DamageRecoveryRoutine());
         }
-        
+
         DetectDeath();
     }
 
     private IEnumerator DamageRecoveryRoutine()
     {
-        yield return new WaitForSeconds(damageRecoveryTime);
+        yield return new WaitForSeconds(playerSo.damageRecoveryTime);
         canTakeDamage = true;
     }
 
     private void DetectDeath()
     {
-        if (currentHealth <= 0 && isAlive)
+        if (currentHealth <= 0 && PlayerData.IsAlive)
         {
-            isAlive = false;
+            PlayerData.IsAlive = false;
             knockBack.StopKnockBackMovement();
-            GameInput.Instance.DisableMovement();
+            DisableMovement();
             OnPlayerDeath?.Invoke(this, EventArgs.Empty);
         }
     }
 
-    private void Update()
-    { 
-        inputVector = GameInput.Instance.GetMovementVector();
+    private void DisableMovement()
+    {
+        GetComponent<PlayerInput>().enabled = false; // Отключаем ввод
     }
-
+*/
     private void HandleMovement()
     {
-        rb.MovePosition(rb.position + inputVector * (moveSpeed * Time.fixedDeltaTime));
+        rb.MovePosition(rb.position + inputVector * (PlayerData.MoveSpeed * Time.fixedDeltaTime));
 
-        if (Math.Abs(inputVector.x) > minMovingSpeed || Math.Abs(inputVector.y) > minMovingSpeed)
-        {
-            isRunning = true;
-        } else {
-            isRunning = false;
-        }
+        PlayerData.InputVector = inputVector;
+
+        PlayerData.IsRunning = Math.Abs(inputVector.x) > minMovingSpeed || Math.Abs(inputVector.y) > minMovingSpeed;
+        
+        PlayerData.ScreenPosition = Camera.main.WorldToScreenPoint(transform.position);
     }
 
-    public bool IsRunning()
+    // получение вектора движения игрока
+    private void OnMove(InputValue value)
     {
-        return isRunning;
+        inputVector = value.Get<Vector2>().normalized;
     }
-
- 
-
-    public Vector3 GetPlayerScreenPosition()
+    
+    private void OnFire()
     {
-        Vector3 playerScreenPosition = Camera.main.WorldToScreenPoint(transform.position);
+        // ActiveWeapon.Instance.GetActiveWeapon().Attack();
+        Debug.Log("Fire");
+        /*if (nextAttackTime > Time.time)
+            return;
 
-        return playerScreenPosition;
+        nextAttackTime = Time.time + AttackCooldown;
+        OnPlayerAttack?.Invoke();*/
     }
 }

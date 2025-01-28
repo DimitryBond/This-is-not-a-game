@@ -1,3 +1,4 @@
+/*
 using System;
 using UnityEngine;
 
@@ -66,3 +67,4 @@ public class BatVisual : MonoBehaviour
         enemyEntity.PolygonColliderTurnOn();
     }
 }
+*/

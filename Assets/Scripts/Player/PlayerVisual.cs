@@ -2,37 +2,63 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-
+[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(SpriteRenderer))]
 public class PlayerVisual : MonoBehaviour
 {
+    [SerializeField] private Player player;
+    private PlayerData playerData;
     private Animator animator;
-    private const string IS_RUNNING = "IsRunning";
-    private const string IS_DIE = "IsDie";
-    private const string TAKE_HIT = "TakeHit";
     private SpriteRenderer spriteRenderer;
+
+    private const string IS_RUNNING = "IsRunning";
+    //private const string IS_DIE = "IsDie";
+    //private const string TAKE_HIT = "TakeHit";
+    
 
     private void Awake()
     {
+        playerData = player.PlayerData;
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
+    private void OnEnable()
+    {
+        playerData.OnInputVectorChanged += Move;
+        playerData.OnScreenPositionChanged += AdjustPlayerFacingDirection;
+    }
+    
+    private void OnDisable()
+    {
+        playerData.OnInputVectorChanged -= Move;
+        playerData.OnScreenPositionChanged += AdjustPlayerFacingDirection;
+    }
+
+    private void Move(Vector2 inputVector)
+    {
+        animator.SetBool(IS_RUNNING, playerData.IsRunning);
+    }
+
     private void Update()
     {
-        animator.SetBool(IS_RUNNING, Player.Instance.IsRunning());
+        
 
+        /*
         if (Player.Instance.IsAlive())
         {
             AdjustPlayerFacingDirection();
-        }
+        }*/
     }
 
 
+    /*
     private void Start()
     {
-        Player.Instance.OnPlayerDeath += Player_OnPlayerDeath;
-        Player.Instance.OnPlayerTakeHit += Player_OnPlayerTakeHit;
+        //Player.Instance.OnPlayerDeath += Player_OnPlayerDeath;
+        //Player.Instance.OnPlayerTakeHit += Player_OnPlayerTakeHit;
     }
 
     private void Player_OnPlayerTakeHit(object sender, EventArgs e)
@@ -44,19 +70,13 @@ public class PlayerVisual : MonoBehaviour
     {
         animator.SetBool(IS_DIE, true);
     }
+    */
 
 
-    private void AdjustPlayerFacingDirection()
+    private void AdjustPlayerFacingDirection(Vector2 screenPosition)
     {
-        Vector3 mousePosition = GameInput.Instance.GetMousePosition();
-        Vector3 playerPosition = Player.Instance.GetPlayerScreenPosition();
+        Vector2 mousePosition = GameInput.Instance.GetMousePosition();
 
-        if (mousePosition.x < playerPosition.x)
-        {
-            spriteRenderer.flipX = true;
-        }
-        else {
-            spriteRenderer.flipX = false;
-        }
+        spriteRenderer.flipX = mousePosition.x < screenPosition.x;
     }
 }
